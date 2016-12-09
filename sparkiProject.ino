@@ -234,7 +234,9 @@ void gotocup_GrabCup()
 
 void place_cup() {
   while(1){
-
+  sparki.clearLCD();
+  sparki.print("counter: "); sparki.println(counter);
+  sparki.updateLCD();
   int lineLeft   = sparki.lineLeft();   // measure the left IR sensor
   int lineCenter = sparki.lineCenter(); // measure the center IR sensor
   int lineRight  = sparki.lineRight();  // measure the right IR sensor
@@ -273,9 +275,9 @@ void place_cup() {
         sparki.gripperStop();
         sparki.moveBackward(5);
         sparki.moveLeft(90);
-        while(lineLeft > THRESHOLD){
+        while(lineRight > THRESHOLD){
           sparki.moveLeft();
-          lineCenter = sparki.lineLeft();
+          lineRight = sparki.lineRight();
         }
         sparki.moveForward(2);
         moveToStart();
@@ -290,9 +292,9 @@ void place_cup() {
         sparki.gripperStop();
         sparki.moveBackward(5);
         sparki.moveRight(90);
-        while(lineRight > THRESHOLD){
+        while(lineLeft > THRESHOLD){
           sparki.moveRight();
-          lineRight = sparki.lineRight();
+          lineLeft = sparki.lineLeft();
         }
         sparki.moveForward(2);
         moveToStart();
@@ -310,6 +312,10 @@ void moveToStart() {
   int lineCenter = sparki.lineCenter(); // measure the center IR sensor
   int lineRight  = sparki.lineRight();  // measure the right IR sensor
 
+  if (lineCenter < THRESHOLD) {
+    sparki.moveForward();
+  }
+  
   if ( lineLeft < THRESHOLD ) // if line is below left line sensor
   {
     sparki.moveLeft(); // turn left
@@ -328,22 +334,53 @@ void moveToStart() {
     sparki.moveForward(); // move forward
   }
 
+   if ( (lineCenter < THRESHOLD) && (lineLeft < THRESHOLD) && (lineRight < THRESHOLD) ){
+        if (lineCenter < THRESHOLD) {
+        sparki.moveForward();
+      }
+      
+      if ( lineLeft < THRESHOLD ) // if line is below left line sensor
+      {
+        sparki.moveLeft(); // turn left
+      }
+    
+      if ( lineRight < THRESHOLD ) // if line is below right line sensor
+      {
+        sparki.moveRight(); // turn right
+      }
+    //  lineCenter = sparki.lineCenter();
+    //  lineLeft = sparki.lineLeft();
+    //  lineRight = sparki.lineRight();
+      // if the center line sensor is the only one reading a line
+      if ( (lineCenter < THRESHOLD) && (lineLeft > THRESHOLD) && (lineRight > THRESHOLD) )
+      {
+        sparki.moveForward(); // move forward
+      }
+    
+  }
+
+    if( (lineCenter > THRESHOLD) && (lineLeft > THRESHOLD) && (lineRight > THRESHOLD) ){
+      sparki.moveStop();
+      break;
+    }
+  }
   //if no line on censor
-   else if ( (lineCenter > THRESHOLD) && (lineLeft > THRESHOLD) && (lineRight > THRESHOLD) )
   {
     if(right){
-      sparki.moveForward(1);
+      sparki.moveForward(4);
       sparki.moveRight(90);
       sparki.moveForward(4);
+      sparki.moveStop();
       return;
     }
     else{
-      sparki.moveForward(5);
+      sparki.moveForward(7);
+      sparki.moveStop();
     return;
   }
- 
   }
-}
+    
+
 }
 
 void resetBoard()
@@ -369,7 +406,7 @@ void printBoard()
 void setup() {
   // put your setup code here, to run once:
   resetBoard();
-  sparki.RGB(10,0,0);
+  sparki.RGB(0,0,10);
   // Start with state 0
   sparki.clearLCD();
   sparki.println("Whats up? -Sparki");
@@ -461,12 +498,15 @@ void loop() {
         }
         break;
     case LOSS:
+        sparki.RGB(10,0,0);
         sparki.clearLCD(); sparki.println("State: LOSS"); sparki.updateLCD();
         break;
     case WIN:
+        sparki.RGB(0,10,0);
         sparki.clearLCD(); sparki.println("State: WIN"); sparki.updateLCD();
         break;
     case TIE:
+        sparki.RGB(10, 10, 10);
         sparki.clearLCD(); sparki.println("State: TIE"); sparki.updateLCD();
         break;
   }
