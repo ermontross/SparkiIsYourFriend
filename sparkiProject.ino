@@ -273,9 +273,11 @@ void place_cup() {
         sparki.gripperStop();
         sparki.moveBackward(5);
         sparki.moveLeft(90);
-        while(lineCenter > THRESHOLD){
+        while(lineLeft > THRESHOLD){
           sparki.moveLeft();
+          lineCenter = sparki.lineLeft();
         }
+        sparki.moveForward(2);
         moveToStart();
         return;
       }
@@ -288,9 +290,11 @@ void place_cup() {
         sparki.gripperStop();
         sparki.moveBackward(5);
         sparki.moveRight(90);
-        while(lineCenter > THRESHOLD){
+        while(lineRight > THRESHOLD){
           sparki.moveRight();
+          lineRight = sparki.lineRight();
         }
+        sparki.moveForward(2);
         moveToStart();
         return;
       }
@@ -315,14 +319,17 @@ void moveToStart() {
   {
     sparki.moveRight(); // turn right
   }
-
+//  lineCenter = sparki.lineCenter();
+//  lineLeft = sparki.lineLeft();
+//  lineRight = sparki.lineRight();
   // if the center line sensor is the only one reading a line
   if ( (lineCenter < THRESHOLD) && (lineLeft > THRESHOLD) && (lineRight > THRESHOLD) )
   {
     sparki.moveForward(); // move forward
   }
+
   //if no line on censor
-  if ( (lineCenter > THRESHOLD + 50) && (lineLeft > THRESHOLD + 50) && (lineRight > THRESHOLD + 50) )
+   else if ( (lineCenter > THRESHOLD) && (lineLeft > THRESHOLD) && (lineRight > THRESHOLD) )
   {
     if(right){
       sparki.moveForward(1);
@@ -334,7 +341,7 @@ void moveToStart() {
       sparki.moveForward(5);
     return;
   }
-  return;
+ 
   }
 }
 }
@@ -464,4 +471,3 @@ void loop() {
         break;
   }
 }
-
